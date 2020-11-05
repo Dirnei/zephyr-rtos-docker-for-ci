@@ -1,3 +1,9 @@
+
+[![](https://img.shields.io/docker/v/dirnei/zephyr-rtos-for-ci?style=for-the-badge)](https://cloud.docker.com/repository/docker/dirnei/zephyr-rtos-for-ci/ "View on Docker Hub")
+[![](https://img.shields.io/docker/image-size/dirnei/zephyr-rtos-for-ci/latest?style=for-the-badge)](https://cloud.docker.com/repository/docker/dirnei/zephyr-rtos-for-ci/ "View on Docker Hub")
+[![](https://img.shields.io/docker/pulls/dirnei/zephyr-rtos-for-ci?style=for-the-badge)](https://cloud.docker.com/repository/docker/dirnei/zephyr-rtos-for-ci/ "View on Docker Hub")
+[![](https://img.shields.io/github/license/dirnei/zephyr-rtos-docker-for-ci?style=for-the-badge)](https://cloud.docker.com/repository/docker/dirnei/zephyr-rtos-for-ci/ "View on Docker Hub")
+
 # PlatformIO container with preinstalled toolchain for zephyr on ststm32 platform
 
 This docker image can be used to build ZephyrRTOS projects within a docker container. It has no entrypoint so you have to provide the command by yourself. This e.g. usefull if you want to run this container in a Azure DevOps build pipeline.
