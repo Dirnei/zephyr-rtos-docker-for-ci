@@ -1,0 +1,23 @@
+#!/bin/bash
+echo "============================================="
+echo $SOURCE_BRANCH
+echo $SOURCE_COMMIT
+echo $COMMIT_MSG
+echo $DOCKER_REPO
+echo $DOCKERFILE_PATH
+echo $DOCKER_TAG
+echo $IMAGE_NAME
+echo "============================================="
+
+if [ $DOCKER_TAG == "master" ] && [ $IS_DRAFT == "false" ]; then
+    VERSION=master
+else
+    RESPONSE="`wget -qO- https://api.github.com/repos/zephyrproject-rtos/zephyr/releases/latest`"
+    SUBSELECT="`echo $(echo $RESPONSE | grep -oP '"tag_name":\s"zephyr-(v\d\.\d\.\d)"[\d|\D]+"draft":\s(\w+),')`"
+    VERSION="`echo $SUBSELECT | grep -oP '"tag_name":\s"zephyr-\K(v\d\.\d\.\d)'`"
+    IS_DRAFT="`echo $SUBSELECT | grep -oP '"draft":\s\K(\w+)'`"
+
+    echo "Current version: ${VERSION}"
+fi
+
+docker build --build-arg ZEPHYR_VERSION=$VERSION -f $DOCKERFILE_PATH -t $IMAGE_NAME .
