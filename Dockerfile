@@ -19,11 +19,11 @@ RUN apt-get install -y --no-install-recommends cmake ninja-build powershell
 USER vsts:vsts
 
 RUN pip3 install --user -U west
-RUN west init ~/zephyrproject
+RUN west init ~/zephyrproject && cd ~/zephyrproject/zephyr && git checkout ${ZEPHYR_VERSION} && find ~/zephyrproject -type d -and -name ".git" | xargs rm -rf
 
 WORKDIR /home/vsts/zephyrproject
 
-RUN west update && cd zephyr && git checkout ${ZEPHYR_VERSION} && find ~/zephyrproject -type d -and -name ".git" | xargs rm -rf
+RUN west update && find ~/zephyrproject -type d -and -name ".git" | xargs rm -rf
 RUN pip3 install --user -r ~/zephyrproject/zephyr/scripts/requirements.txt
 
 WORKDIR /home/vsts
