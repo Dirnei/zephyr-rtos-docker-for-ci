@@ -1,5 +1,4 @@
 #!/bin/bash
-docker push $IMAGE_NAME
 
 if [ "$DOCKER_TAG" != "master" ] ; then
     source hooks/getversion.sh
