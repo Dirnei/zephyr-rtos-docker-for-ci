@@ -12,7 +12,7 @@ echo "============================================="
 if [ "$DOCKER_TAG" == "master" ] ; then
     VERSION=master
 else
-    source getversion.sh
+    source hooks/getversion.sh
 fi
 
 echo "Using Zephyr-Version: ${VERSION}"

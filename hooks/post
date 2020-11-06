@@ -2,7 +2,7 @@
 docker push $IMAGE_NAME
 
 if [ "$DOCKER_TAG" != "master" ] ; then
-    source getversion.sh
+    source hooks/getversion.sh
     echo "Using Zephyr-Version: ${VERSION}"
     docker tag $IMAGE_NAME $DOCKER_REPO:$VERISON
     docker push $DOCKER_REPO:$VERSION
