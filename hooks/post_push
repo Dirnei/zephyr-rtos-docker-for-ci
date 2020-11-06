@@ -3,6 +3,6 @@
 if [ "$DOCKER_TAG" != "master" ] ; then
     source hooks/getversion.sh
     echo "Using Zephyr-Version: ${VERSION}"
-    docker tag $IMAGE_NAME $DOCKER_REPO:$VERISON
+    docker tag $IMAGE_NAME $DOCKER_REPO:$VERSION
     docker push $DOCKER_REPO:$VERSION
 fi
