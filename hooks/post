@@ -1,3 +1,4 @@
+#!/bin/bash
 docker push $IMAGE_NAME
 
 if [ "$DOCKER_TAG" != "master" ] ; then
