@@ -9,7 +9,7 @@ function Start-Ci() {
         [Parameter(Mandatory = $True)]
         [String]$ProjectPath,
         [Parameter(Mandatory = $False)]
-        [String]$buildPath
+        [String]$BuildPath
     )
 
     $ProjectPath = Resolve-Path $ProjectPath
@@ -31,13 +31,13 @@ function Start-Ci() {
         }
     }
 
-    if (-Not (Test-Path($buildPath))) {
-        $buildPath = "~/build"
-        New-Item -ItemType Directory -Path $buildPath
+    if (-Not (Test-Path($BuildPath))) {
+        $BuildPath = "~/build"
+        New-Item -ItemType Directory -Path $BuildPath
     }
 
 
-    $buildPath = Resolve-Path $buildPath
+    $BuildPath = Resolve-Path $BuildPath
 
     $config = @{};
     $config.boardname = $Board
@@ -60,19 +60,19 @@ function Start-Ci() {
     Write-Host " Zephyr path  :  /home/vsts/zephyrproject/zephyr" 
     Write-Host "------------------------------- Resolved ------------------------------------"
     Write-Host " Project path : " $ProjectPath
-    Write-Host " Build path   : " $buildPath
+    Write-Host " Build path   : " $BuildPath
     Write-Host " Caller path  : " $StartLocation
     Write-Host " Script path  : " $PSScriptRoot
     Write-Host "-----------------------------------------------------------------------------"
 
-    if ($Clean -and (Test-Path $buildPath)) {
+    if ($Clean -and (Test-Path $BuildPath)) {
         Write-Host -ForegroundColor Green "Build directory cleaned!"
-        Remove-item -Path $buildPath -Recurse -Force -InformationAction SilentlyContinue
+        Remove-item -Path $BuildPath -Recurse -Force -InformationAction SilentlyContinue
     }
 
     $params = @{
         'p' = "auto"
-        'd' = $buildPath
+        'd' = $BuildPath
         'b' = $config.boardname
     }
 

@@ -13,15 +13,14 @@ This docker image can be used to build ZephyrRTOS projects within a docker conta
 ## Example usage local (powershell)
 
 ```docker
-docker run `
-    -v ${pwd}:/home/vsts/source `
-    --user 1001 `
-    --name zephyr-build-container `
-    dirnei/zephyr-rtos-for-ci:latest `
-    pwsh -Command Start-Ci -ProjectPath ~/source/zephyr
+docker run -v ${pwd}:/home/vsts/source `
+    --user 1001 --rm dirnei/zephyr-rtos-for-ci:latest `
+    pwsh -Command Start-Ci -ProjectPath ~/source/zephyr -Board nucleo_f767zi -BuildPath ~/source/build
 
 docker rm zephyr-build-container
 ```
+
+> Note: Default build path is: `~/build`. It can be changed with -BuildPath
 
 ## Example usage Azure DevOps
 
