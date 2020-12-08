@@ -7,7 +7,9 @@ function Start-Ci() {
         [Parameter(Mandatory = $False)]
         [String]$Board,
         [Parameter(Mandatory = $True)]
-        [String]$ProjectPath
+        [String]$ProjectPath,
+        [Parameter(Mandatory = $False)]
+        [String]$buildPath
     )
 
     $ProjectPath = Resolve-Path $ProjectPath
@@ -29,12 +31,13 @@ function Start-Ci() {
         }
     }
 
-    if (Test-Path("$ProjectPath/.git")) {
-        $buildPath = "$ProjectPath/build"
+    if (-Not (Test-Path($buildPath))) {
+        $buildPath = "~/build"
+        New-Item -ItemType Directory -Path $buildPath
     }
-    else {
-        $buildPath = "$ProjectPath/../build"
-    }
+
+
+    $buildPath = Resolve-Path $buildPath
 
     $config = @{};
     $config.boardname = $Board
@@ -83,10 +86,12 @@ function Start-Ci() {
             west -v build $paramString $ProjectPath *>&1 | Tee-Object -Variable $voidOutput
         }
         else {
+            Write-Host "west build $paramString $ProjectPath *>&1 | Tee-Object -Variable `$voidOutput"
             west build $paramString $ProjectPath *>&1 | Tee-Object -Variable $voidOutput
         }
         
-    } finally {
+    }
+    finally {
         Set-Location $StartLocation
         exit $LASTEXITCODE
     }
