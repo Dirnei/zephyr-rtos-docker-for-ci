@@ -1,6 +1,7 @@
 FROM python:3.9.0-buster
 
 ARG ZEPHYR_VERSION=master
+ARG ZEPHYR_SOURCE=https://github.com/zephyrproject-rtos/zephyr.git
 
 # add build user
 RUN groupadd -g 1001 vsts
@@ -18,14 +19,6 @@ RUN apt-get install -y --no-install-recommends cmake ninja-build powershell
 # install tool-chain for user vsts
 USER vsts:vsts
 
-RUN pip3 install --user -U west
-RUN west init ~/zephyrproject && cd ~/zephyrproject/zephyr && git checkout ${ZEPHYR_VERSION} && find ~/zephyrproject -type d -and -name ".git" | xargs rm -rf
-
-WORKDIR /home/vsts/zephyrproject
-
-RUN west update && find ~/zephyrproject -type d -and -name ".git" | xargs rm -rf
-RUN pip3 install --user -r ~/zephyrproject/zephyr/scripts/requirements.txt
-
 WORKDIR /home/vsts
 
 RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 \
@@ -34,8 +27,18 @@ RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-a
 ENV ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb
 ENV GNUARMEMB_TOOLCHAIN_PATH=/home/vsts/gcc-arm-none-eabi-9-2020-q2-update
 
+RUN pip3 install --user -U west
+
+RUN mkdir ~/zephyrproject && mkdir ~/zephyrproject/zephyr && mkdir ~/zephyrproject/.west
+COPY ./config ./zephyrproject/.west/config
+
+RUN git clone --depth 1 -b ${ZEPHYR_VERSION} ${ZEPHYR_SOURCE} ~/zephyrproject/zephyr && cd ~/zephyrproject/zephyr && west update && find ~/zephyrproject -type d -and -name ".git" | xargs rm -rf
+RUN pip3 install --user -r ~/zephyrproject/zephyr/scripts/requirements.txt
+
 COPY ./profile.ps1 ./.config/powershell/
+
 USER root:root
+RUN chown vsts:vsts /home/vsts/zephyrproject/.west/config
 
 # Delete entrypoint of parent containers (required by Azure Pipelines)
 ENTRYPOINT []
