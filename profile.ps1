@@ -31,12 +31,14 @@ function Start-Ci() {
         }
     }
 
-    if (-Not (Test-Path($BuildPath))) {
+    if ($BuildPath.Length -eq 0) {
         $BuildPath = "~/build"
+    }
+    
+    if (-not(Test-Path $BuildPath)) {
         New-Item -ItemType Directory -Path $BuildPath
     }
-
-
+    
     $BuildPath = Resolve-Path $BuildPath
 
     $config = @{};
