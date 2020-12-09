@@ -1,8 +1,17 @@
 #!/bin/bash
 
-if [ "$DOCKER_TAG" != "master" ] ; then
+if [ "$DOCKER_TAG" == "latest" ] ; then
     source hooks/getversion.sh
-    echo "Using Zephyr-Version: ${VERSION}"
+
+    echo "Tagging and pushing version: ${MAJOR}"
+    docker tag $IMAGE_NAME $DOCKER_REPO:$MAJOR
+    docker push $DOCKER_REPO:$MAJOR
+
+    echo "Tagging and pushing version: ${MAJOR}.${MINOR}"
+    docker tag $IMAGE_NAME $DOCKER_REPO:$MAJOR.$MINOR
+    docker push $DOCKER_REPO:$MAJOR.$MINOR
+
+    echo "Tagging and pushing version: ${VERSION}"
     docker tag $IMAGE_NAME $DOCKER_REPO:$VERSION
     docker push $DOCKER_REPO:$VERSION
 fi
