@@ -9,7 +9,11 @@ function Start-Ci() {
         [Parameter(Mandatory = $True)]
         [String]$ProjectPath,
         [Parameter(Mandatory = $False)]
-        [String]$BuildPath
+        [String]$BuildPath,
+        [Parameter(Mandatory = $False)]
+        [String[]]$ExtraCFlags,
+        [Parameter(Mandatory = $False)]
+        [String[]]$ExtraCxxFlags
     )
 
     $ProjectPath = Resolve-Path $ProjectPath
@@ -66,30 +70,51 @@ function Start-Ci() {
     Write-Host " Caller path  : " $StartLocation
     Write-Host " Script path  : " $PSScriptRoot
     Write-Host "-----------------------------------------------------------------------------"
-
+    
     if ($Clean -and (Test-Path $BuildPath)) {
-        Write-Host -ForegroundColor Green "Build directory cleaned!"
         Remove-item -Path $BuildPath -Recurse -Force -InformationAction SilentlyContinue
+        Write-Host -ForegroundColor Green " Build directory cleaned!"
     }
-
+    
     $params = @{
         'p' = "auto"
         'd' = $BuildPath
         'b' = $config.boardname
     }
-
+    
     $paramString = $params.Keys | ForEach-Object { "-$_" + $params.Item($_) }
-
     Set-Location "~/zephyrproject/zephyr"
-
+    
     try {
         $voidOutput = "Used to speed up output."
+        
+        if ($ExtraCFlags.Length -ne 0) {
+            $EXTRA_CMAKE_C_FLAGS = "-DEXTRA_CFLAGS="
+            
+            foreach ($flag in $ExtraCFlags) {
+                $EXTRA_CMAKE_C_FLAGS += "-$flag "
+            }
+        }
+        
+        if ($ExtraCxxFlags.Length -ne 0) {
+            $EXTRA_CMAKE_CXX_FLAGS = "-DEXTRA_CXXFLAGS="
+            
+            foreach ($flag in $ExtraCFlags) {
+                $EXTRA_CMAKE_CXX_FLAGS += "-$flag "
+            }
+        }
+        
+        Write-Host " EXTRA C FLAGS   : " $EXTRA_CMAKE_C_FLAGS
+        Write-Host " EXTRA CXX FLAGS : " $EXTRA_CXXMAKE_C_FLAGS
+        Write-Host "-----------------------------------------------------------------------------"
+        
+        
         if ($VerboseLog) {
-            west -v build $paramString $ProjectPath *>&1 | Tee-Object -Variable $voidOutput
+            west -v build $paramString $ProjectPath -- $EXTRA_CMAKE_C_FLAGS $EXTRA_CMAKE_CXX_FLAGS *>&1 | Tee-Object -Variable $voidOutput
         }
         else {
-            Write-Host "west build $paramString $ProjectPath *>&1 | Tee-Object -Variable `$voidOutput"
-            west build $paramString $ProjectPath *>&1 | Tee-Object -Variable $voidOutput
+            Write-Host "west build $paramString $ProjectPath -- $EXTRA_CMAKE_C_FLAGS $EXTRA_CMAKE_CXX_FLAGS *>&1 | Tee-Object -Variable `$voidOutput"
+            west build $paramString $ProjectPath -- $EXTRA_CMAKE_C_FLAGS $EXTRA_CMAKE_CXX_FLAGS *>&1 | Tee-Object -Variable $voidOutput
         }
         
     }

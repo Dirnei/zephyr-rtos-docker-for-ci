@@ -77,3 +77,46 @@ I use the following project structure:
 ```
 
 I place all zephyr configuration files in a ```./zephyr``` folder. This is also the "entrypoint" for the CI build. If you wan't to use it you have to use the same structure. Or you could provide your own build script based on the [profile.ps1](/profile.ps1) script from me
+
+## Powershell Script
+
+As I am a Windows developer, I used Powershell inside the linux container because then I can also test the script on my local machine and I think its more fun than other scripting languages :)
+
+To start the provided build script change to the Powershell with `pwsh` and start the script with the method call `Start-Ci`. It can also be started in one go with `pwsh -Command Start-Ci -ProjectPath ~/source/zephyr`. This runs the Start-Ci command in the powershell called from the default shell.
+
+### Arguments
+
+Here is a overview of the available parameter for the `Start-Ci` command:
+
+``` powershell
+  [Parameter(Mandatory = $False)]
+  [Switch]$VerboseLog,
+  [Parameter(Mandatory = $False)]
+  [Switch]$Clean,
+  [Parameter(Mandatory = $False)]
+  [String]$Board,
+  [Parameter(Mandatory = $True)]
+  [String]$ProjectPath,
+  [Parameter(Mandatory = $False)]
+  [String]$BuildPath,
+  [Parameter(Mandatory = $False)]
+  [String[]]$ExtraCFlags,  # <== NEW
+  [Parameter(Mandatory = $False)]
+  [String[]]$ExtraCxxFlags # <== NEW
+```
+
+### NEW: ExtraCFlags and ExtraCxxFlags
+
+Arrays as a paremter in powershell are not that intuitive so here is an example for that:
+
+``` powershell
+ Start-Ci -ProjectPath ~/source/zephyr -ExtraCFlags DNO_IP,DOTHER_DEFINE
+```
+
+This will define `NO_IP` and `OTHER_DEFINE` in your zephyr project. In other words it will pass those parameters through west through cmake to the compiler.
+
+This was really tricky as I could not find any documentation on how to do this, but it is possible. Here is an example how the west cli call looks:
+
+```
+  west build ..... -- -DEXTRA_CFLAGS=-DNO_IP -DOTHER_DEFINE
+```
